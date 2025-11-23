@@ -1,5 +1,5 @@
 # bfc
-A naive implementation of a brainfuck to x86-64 GNU assembly compiler, written in Rust.
+Naive implementation of a brainfuck to x86-64 GNU assembly compiler, written in Rust.
 ## Installation
 > [!IMPORTANT]
 > Please note that this is only compatible with Linux systems using an AMD64 processor.<br />
@@ -52,5 +52,5 @@ I have included a few fun brainfuck programs in the
 * **mandelbrot.bf** by Erik Bosman – A mandelbrot set fractal viewer
 
 If you're interested in learning more about brainfuck check out this well-written
-[tutorial](https://gist.github.com/roachhd/dce54bec8ba55fb17d3a) by Katie Ball<br />
+[tutorial](https://gist.github.com/roachhd/dce54bec8ba55fb17d3a) by Katie Ball
 (the person who made the brainfuck to C interpreter and helloworld program!)
