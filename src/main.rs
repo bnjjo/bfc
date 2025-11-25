@@ -14,7 +14,7 @@ use std::time::Instant;
 *
 *  +/- -> increments/decrements the value in that cell
 *
-*  [ -> if current cell is zero skip to matcing ]
+*  [ -> if current cell is zero skip to matching ]
 *
 *  ] -> if current cell is NOT zero jump back to starting [
 *
@@ -153,10 +153,15 @@ fn main() {
         std::process::exit(1);
     }
 
-    println!(
-        "Program compiled in {} millisecond(s).",
-        now.elapsed().as_millis()
-    );
+    let micros = now.elapsed().as_micros();
+    if micros > 1000 {
+        println!(
+            "Program compiled in {} millisecond(s).",
+            now.elapsed().as_millis()
+        );
+    } else {
+        println!("Program compiled in {} microsecond(s).", micros);
+    }
 
     let cmd = Command::new("gcc")
         .arg(format!("{}.s", output_file))
