@@ -1,5 +1,5 @@
 # bfc
-Naive implementation of a brainfuck to x86-64 GNU assembly compiler, written in Rust.
+Naive implementation of a brainfuck to x86-64 GNU assembly compiler.
 ## Installation
 > [!IMPORTANT]
 > Please note that this is only compatible with Linux systems using an AMD64 processor.<br />
