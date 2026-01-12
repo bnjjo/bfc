@@ -63,12 +63,60 @@ fn compile_brainfuck(bf_file: &String, path: &String) -> Result<(), std::io::Err
     let mut loop_stack: Vec<usize> = vec![];
     let mut closed_loops: Vec<usize> = vec![];
 
-    for char in contents.chars() {
+    let mut last_char: char = ' ';
+    let mut repeat_count: usize = 1;
+
+    fn flush(output: &mut File, char: char, repeat_count: usize) -> Result<(), std::io::Error> {
         match char {
-            '>' => writeln!(output, "        add r12, 1")?,
-            '<' => writeln!(output, "        sub r12, 1")?,
-            '+' => writeln!(output, "        add byte ptr [r12], 1")?,
-            '-' => writeln!(output, "        sub byte ptr [r12], 1")?,
+            '>' => writeln!(output, "        add r12, {}", repeat_count),
+            '<' => writeln!(output, "        sub r12, {}", repeat_count),
+            '+' => writeln!(output, "        add byte ptr [r12], {}", repeat_count),
+            '-' => writeln!(output, "        sub byte ptr [r12], {}", repeat_count),
+            _ => Ok(()),
+        }
+    }
+
+    let valid_chars = "<>+-,.[]";
+
+    for char in contents.chars() {
+        if char != last_char && valid_chars.contains(char) {
+            flush(&mut output, last_char, repeat_count)?;
+            last_char = ' ';
+            repeat_count = 1;
+        }
+        match char {
+            '>' => {
+                if last_char == '>' {
+                    repeat_count += 1;
+                } else {
+                    last_char = '>';
+                    repeat_count = 1;
+                }
+            }
+            '<' => {
+                if last_char == '<' {
+                    repeat_count += 1;
+                } else {
+                    last_char = '<';
+                    repeat_count = 1;
+                }
+            }
+            '+' => {
+                if last_char == '+' {
+                    repeat_count += 1;
+                } else {
+                    last_char = '+';
+                    repeat_count = 1;
+                }
+            }
+            '-' => {
+                if last_char == '-' {
+                    repeat_count += 1;
+                } else {
+                    last_char = '-';
+                    repeat_count = 1;
+                }
+            }
             '[' => {
                 loop_counter = 0;
                 loop {
