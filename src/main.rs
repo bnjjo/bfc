@@ -180,11 +180,32 @@ fn compile_brainfuck(bf_file: &String, path: &String) -> Result<(), std::io::Err
 }
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let mut args: Vec<String> = env::args().collect();
+    let mut intermediate = false;
 
-    if args.len() != 3 {
-        eprintln!("Error: Invalid argument(s).\nUSAGE: bfc [BRAINFUCK FILE].bf [OUTPUT FILE]");
-        std::process::exit(1);
+    let usage = "USAGE: bfc [BRAINFUCK FILE].bf [OUTPUT FILE]\n";
+
+    if args.iter().any(|arg| arg == "-h" || arg == "--help") {
+        println!("BFC - Brainfuck Compiler v0.1.4 by https://github.com/bnjjo\n");
+        println!("{usage}");
+        println!("Flags:");
+        println!("      -h, --help          outputs this help message");
+        println!("      -i, --intermediate  keeps the intermediate .s file BFC generates (in the same directory as the output)");
+        std::process::exit(0);
+    }
+
+    match args.len() - 1 {
+        2 => {}
+        3 => {
+            if let Some(idx) = args.iter().position(|arg| arg == "-i" || arg == "--intermediate") {
+                args.remove(idx);
+                intermediate = true;
+            }
+        }
+        _ => {
+            eprintln!("\x1b[31mError:\x1b[0m Invalid argument(s).\n{usage}");
+            std::process::exit(1);
+        }
     }
 
     let brainfuck_file = &args[1];
@@ -226,8 +247,10 @@ fn main() {
         std::process::exit(1);
     }
 
-    if let Err(e) = std::fs::remove_file(format!("{}.s", output_file)) {
-        eprintln!("Unexpected error occurred: {}", e);
-        std::process::exit(1);
+    if !intermediate {
+        if let Err(e) = std::fs::remove_file(format!("{}.s", output_file)) {
+            eprintln!("Unexpected error occurred: {}", e);
+            std::process::exit(1);
+        }
     }
 }
