@@ -9,35 +9,44 @@ Install GCC if you haven't already:
 
 For Debian-based distros:
 
-```
+```bash
 sudo apt install gcc
 ```
 
 For Arch-based distros:
 
-```
+```bash
 sudo pacman -S gcc
 ```
 
 Once you have done that:
 1. Download the precompiled binary in the [Releases page](https://github.com/bnjjo/bfc/releases)
 2. Mark it as executable:
-```
+```bash
 chmod +x bfc
 ```
 3. (Optionally) move it to your PATH:
-```
-sudo mv bfc /usr/local/bin/
+```bash
+sudo mv bfc /usr/local/bin  # system-wide
+mv bfc ~/.local/bin         # per-user
 ```
 
 ## Usage
-```
+```bash
 bfc input.bf output
 ./output
 ```
 or in one line:
 ```bash
 bfc input.bf output && ./output
+```
+
+## Building from source
+```bash
+git clone https://github.com/bnjjo/bfc.git
+cd bfc
+cargo build --release
+./target/release/bfc input.bf output
 ```
 
 ## Examples & credit
