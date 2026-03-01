@@ -58,12 +58,13 @@ fn compile_brainfuck(bf_file: &String, path: &String) -> Result<(), std::io::Err
         .append(true)
         .open(format!("{}.s", path))
         .unwrap();
+
     let mut loop_counter: usize;
     let mut stack_top: usize;
     let mut loop_stack: Vec<usize> = vec![];
     let mut closed_loops: Vec<usize> = vec![];
 
-    let mut last_char: char = ' ';
+    let mut prev_char: char = ' ';
     let mut repeat_count: usize = 1;
 
     fn flush(output: &mut File, char: char, repeat_count: usize) -> Result<(), std::io::Error> {
@@ -79,41 +80,41 @@ fn compile_brainfuck(bf_file: &String, path: &String) -> Result<(), std::io::Err
     let valid_chars = "<>+-,.[]";
 
     for char in contents.chars() {
-        if char != last_char && valid_chars.contains(char) {
-            flush(&mut output, last_char, repeat_count)?;
-            last_char = ' ';
+        if char != prev_char && valid_chars.contains(char) {
+            flush(&mut output, prev_char, repeat_count)?;
+            prev_char = ' ';
             repeat_count = 1;
         }
         match char {
             '>' => {
-                if last_char == '>' {
+                if prev_char == '>' {
                     repeat_count += 1;
                 } else {
-                    last_char = '>';
+                    prev_char = '>';
                     repeat_count = 1;
                 }
             }
             '<' => {
-                if last_char == '<' {
+                if prev_char == '<' {
                     repeat_count += 1;
                 } else {
-                    last_char = '<';
+                    prev_char = '<';
                     repeat_count = 1;
                 }
             }
             '+' => {
-                if last_char == '+' {
+                if prev_char == '+' {
                     repeat_count += 1;
                 } else {
-                    last_char = '+';
+                    prev_char = '+';
                     repeat_count = 1;
                 }
             }
             '-' => {
-                if last_char == '-' {
+                if prev_char == '-' {
                     repeat_count += 1;
                 } else {
-                    last_char = '-';
+                    prev_char = '-';
                     repeat_count = 1;
                 }
             }
@@ -184,13 +185,20 @@ fn main() {
     let mut intermediate = false;
 
     let usage = "USAGE: bfc [BRAINFUCK FILE].bf [OUTPUT FILE]\n";
+    let version = "BFC - Brainfuck Compiler v0.1.5 by https://github.com/bnjjo";
 
     if args.iter().any(|arg| arg == "-h" || arg == "--help") {
-        println!("BFC - Brainfuck Compiler v0.1.4 by https://github.com/bnjjo\n");
+        println!("{version}\n");
         println!("{usage}");
         println!("Flags:");
         println!("      -h, --help          outputs this help message");
+        println!("      -v, --version       outputs current version of BFC");
         println!("      -i, --intermediate  keeps the intermediate .s file BFC generates (in the same directory as the output)");
+        std::process::exit(0);
+    }
+
+    if args.iter().any(|arg| arg == "-v" || arg == "--version") {
+        println!("{version}\n");
         std::process::exit(0);
     }
 
@@ -223,7 +231,14 @@ fn main() {
     }
 
     let micros = now.elapsed().as_micros();
-    if micros > 1000 {
+    if micros > 1_000_000 {
+        println!(
+            "Program compiled in {}.{} second(s).",
+            now.elapsed().as_millis() / 1000,
+            now.elapsed().as_millis() % 1000
+        );
+    }
+    else if micros > 1_000 {
         println!(
             "Program compiled in {} millisecond(s).",
             now.elapsed().as_millis()
